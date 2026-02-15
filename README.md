@@ -43,6 +43,11 @@ Built with a FastAPI backend and a Next.js frontend with Tailwind CSS v4.
     SECRET_KEY=your_generated_secret_key
     ALGORITHM=HS256
     ACCESS_TOKEN_EXPIRE_MINUTES=30
+    EMAIL_HOST=[EMAIL_ADDRESS]
+    EMAIL_PORT=587
+    EMAIL_USERNAME=[EMAIL_ADDRESS]
+    EMAIL_PASSWORD=[PASSWORD]
+    EMAIL_USE_TLS=True
     ```
 
 5.  **Initialize Database & Seed Data**:
@@ -88,7 +93,8 @@ billing-system/
 │   ├── endpoints/      # API Route Handlers
 │   ├── models/         # SQLAlchemy Models
 │   ├── schemas/        # Pydantic Schemas
-│   └── seed-data/      # Database Initialization Scripts
+│   ├── seed-data/      # Database Initialization Scripts
+│   └── utils/          # Utility Functions
 ├── frontend/           # Next.js Frontend
 │   ├── src/
 │   │   ├── app/        # Pages and Layouts (App Router)

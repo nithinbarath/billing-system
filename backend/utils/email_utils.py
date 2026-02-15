@@ -29,8 +29,8 @@ def send_invoice_email(customer_email: str, invoice_data: dict):
         <tr>
             <td style="padding: 8px; border-bottom: 1px solid #eee;">{item['product_name']}</td>
             <td style="padding: 8px; border-bottom: 1px solid #eee;">{item['quantity']}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">${item['unit_price']:.2f}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">${item['total_price']:.2f}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">₹{item['unit_price']:.2f}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #eee; text-align: right;">₹{item['total_price']:.2f}</td>
         </tr>
         """
 
@@ -57,9 +57,9 @@ def send_invoice_email(customer_email: str, invoice_data: dict):
             </table>
             
             <div style="text-align: right; margin-top: 20px;">
-                <p><strong>Total Without Tax:</strong> ${invoice_data['total_without_tax']:.2f}</p>
-                <p><strong>Total Tax:</strong> ${invoice_data['total_tax']:.2f}</p>
-                <p style="font-size: 1.2rem; color: #1e293b;"><strong>Net Amount Paid: ${invoice_data['rounded_net_price']:.2f}</strong></p>
+                <p><strong>Total Without Tax:</strong> ₹{invoice_data['total_without_tax']:.2f}</p>
+                <p><strong>Total Tax:</strong> ₹{invoice_data['total_tax']:.2f}</p>
+                <p style="font-size: 1.2rem; color: #1e293b;"><strong>Net Amount Paid: ₹{invoice_data['rounded_net_price']:.2f}</strong></p>
             </div>
             
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; font-size: 0.8rem; color: #777; text-align: center;">
