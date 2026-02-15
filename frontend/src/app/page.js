@@ -23,13 +23,13 @@ export default function Home() {
             className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-2xl shadow-blue-100 transition-all flex items-center gap-3 text-xs uppercase tracking-widest"
             href="/login"
           >
-            Enter Terminal 🔐
+            Enter Login Page
           </a>
           <a
             className="px-8 py-4 bg-white hover:bg-slate-50 text-slate-600 font-bold rounded-2xl border border-slate-200 transition-all text-xs uppercase tracking-widest"
             href="/dashboard"
           >
-            Go to Dashboard
+            Go to Dashboard Page
           </a>
         </div>
 
