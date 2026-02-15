@@ -5,14 +5,23 @@ import { usePathname } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { logoutAdmin } from '@/store/authSlice';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import ModalDialog from './ModalDialog';
 
 export default function Sidebar() {
     const pathname = usePathname();
     const dispatch = useDispatch();
     const router = useRouter();
 
-    const handleLogout = async () => {
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+    const handleLogoutClick = () => {
+        setIsLogoutModalOpen(true);
+    };
+
+    const confirmLogout = async () => {
         await dispatch(logoutAdmin());
+        setIsLogoutModalOpen(false);
         router.push('/login');
     };
 
@@ -52,12 +61,22 @@ export default function Sidebar() {
             <div className="pt-6 border-t border-slate-800">
                 <div
                     className="flex items-center px-4 py-3 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-xl transition-all duration-200 cursor-pointer group"
-                    onClick={handleLogout}
+                    onClick={handleLogoutClick}
                 >
                     <span className="text-xl mr-3 group-hover:scale-110 transition-transform">🚪</span>
                     <span className="font-medium">Logout</span>
                 </div>
             </div>
+
+            <ModalDialog
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={confirmLogout}
+                title="Confirm Logout"
+                message="Are you sure you want to log out of your session?"
+                confirmText="Logout"
+                cancelText="Stay logged in"
+            />
         </div>
     );
 }

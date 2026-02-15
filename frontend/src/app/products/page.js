@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts, addProduct, removeProduct, editProduct } from '@/store/productSlice';
 import Sidebar from '@/components/Sidebar';
+import ModalDialog from '@/components/ModalDialog';
 
 export default function ProductsPage() {
     const dispatch = useDispatch();
@@ -11,6 +12,8 @@ export default function ProductsPage() {
     const [showModal, setShowModal] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [currentId, setCurrentId] = useState(null);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [productToDelete, setProductToDelete] = useState(null);
     const [formData, setFormData] = useState({
         product_id: '',
         name: '',
@@ -71,9 +74,16 @@ export default function ProductsPage() {
         }
     };
 
-    const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this product?')) {
-            dispatch(removeProduct(id));
+    const handleDelete = (product) => {
+        setProductToDelete(product);
+        setIsDeleteModalOpen(true);
+    };
+
+    const confirmDelete = () => {
+        if (productToDelete) {
+            dispatch(removeProduct(productToDelete.id));
+            setIsDeleteModalOpen(false);
+            setProductToDelete(null);
         }
     };
 
@@ -127,7 +137,7 @@ export default function ProductsPage() {
                                                 </button>
                                                 <button
                                                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all border border-transparent hover:border-red-100"
-                                                    onClick={() => handleDelete(product.id)}
+                                                    onClick={() => handleDelete(product)}
                                                     title="Delete Product"
                                                 >
                                                     <span className="text-lg">🗑️</span>
@@ -148,92 +158,100 @@ export default function ProductsPage() {
                     </div>
                 </div>
 
-                {showModal && (
-                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-                        <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-lg border border-white transform transition-all animate-in fade-in zoom-in duration-200">
-                            <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3">
-                                {isEditing ? 'Edit Product' : 'Add New Product'}
-                            </h3>
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Product ID</label>
-                                    <input
-                                        name="product_id"
-                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-600 transition-all bg-slate-50 disabled:opacity-50"
-                                        value={formData.product_id}
-                                        onChange={handleChange}
-                                        placeholder="e.g. PRD001"
-                                        required
-                                        disabled={isEditing}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Product Name</label>
-                                    <input
-                                        name="name"
-                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-600 transition-all bg-slate-50"
-                                        value={formData.name}
-                                        onChange={handleChange}
-                                        placeholder="Enter product name"
-                                        required
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-700 ml-1">Stock</label>
-                                        <input
-                                            type="number"
-                                            name="available_stocks"
-                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-600 transition-all bg-slate-50"
-                                            value={formData.available_stocks}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-700 ml-1">Price (₹)</label>
-                                        <input
-                                            type="number"
-                                            step="0.01"
-                                            name="price_per_unit"
-                                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-600 transition-all bg-slate-50"
-                                            value={formData.price_per_unit}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-slate-700 ml-1">Tax Percentage (%)</label>
-                                    <input
-                                        type="number"
-                                        step="0.1"
-                                        name="tax_percentage"
-                                        className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-600 transition-all bg-slate-50"
-                                        value={formData.tax_percentage}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="flex gap-4 mt-10">
-                                    <button
-                                        type="submit"
-                                        className="flex-1 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-lg shadow-blue-200 transform hover:-translate-y-0.5 transition-all text-sm uppercase tracking-widest"
-                                    >
-                                        {isEditing ? 'Update Product' : 'Save Product'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-2xl transition-all text-sm uppercase tracking-widest"
-                                        onClick={resetForm}
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-                            </form>
+                <ModalDialog
+                    isOpen={showModal}
+                    onClose={resetForm}
+                    title={isEditing ? 'Edit Product' : 'Add New Product'}
+                    size="lg"
+                    showFooter={false}
+                >
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Product ID</label>
+                            <input
+                                name="product_id"
+                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-600 transition-all bg-slate-50 disabled:opacity-50"
+                                value={formData.product_id}
+                                onChange={handleChange}
+                                placeholder="e.g. PRD001"
+                                required
+                                disabled={isEditing}
+                            />
                         </div>
-                    </div>
-                )}
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Product Name</label>
+                            <input
+                                name="name"
+                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-600 transition-all bg-slate-50"
+                                value={formData.name}
+                                onChange={handleChange}
+                                placeholder="Enter product name"
+                                required
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">Stock</label>
+                                <input
+                                    type="number"
+                                    name="available_stocks"
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-600 transition-all bg-slate-50"
+                                    value={formData.available_stocks}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-slate-700 ml-1">Price (₹)</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="price_per_unit"
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-600 transition-all bg-slate-50"
+                                    value={formData.price_per_unit}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 ml-1">Tax Percentage (%)</label>
+                            <input
+                                type="number"
+                                step="0.1"
+                                name="tax_percentage"
+                                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-50 focus:border-blue-600 transition-all bg-slate-50"
+                                value={formData.tax_percentage}
+                                onChange={handleChange}
+                                required
+                            />
+                        </div>
+                        <div className="flex gap-4 mt-10 pt-6 border-t border-slate-100">
+                            <button
+                                type="submit"
+                                className="flex-1 py-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-100 transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-xs uppercase tracking-widest"
+                            >
+                                {isEditing ? 'Update Product' : 'Save Product'}
+                            </button>
+                            <button
+                                type="button"
+                                className="px-8 py-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-2xl transition-all text-xs uppercase tracking-widest"
+                                onClick={resetForm}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </ModalDialog>
+
+                <ModalDialog
+                    isOpen={isDeleteModalOpen}
+                    onClose={() => setIsDeleteModalOpen(false)}
+                    onConfirm={confirmDelete}
+                    title="Confirm Delete"
+                    message={`Are you sure you want to delete "${productToDelete?.name}"?`}
+                    confirmText="Delete Product"
+                />
             </main>
         </div>
     );
