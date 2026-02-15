@@ -21,7 +21,7 @@ import { ReduxProvider } from "@/store/provider";
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
         <ReduxProvider>
           {children}
         </ReduxProvider>
